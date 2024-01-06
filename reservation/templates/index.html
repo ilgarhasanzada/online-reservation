@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% load static %}
+{% block main %}
+<div class="container-fluid">
+    <div class="row justify-content-md-center">
+            <form id="msform">
+                <ul id="progressbar" class="list-unstyled d-flex justify-content-between">
+                    <li class="active">Restauants</li>
+                    <li>Date and Time</li>
+                    <li>Choose Table</li>
+                    <li>Menu</li>
+                </ul>
+                <fieldset>
+                    <h2 class="fs-title">Restaurants</h2>
+                    <div class="row">
+                        {% for restaurant in restaurants %}
+                        <div class="p-2 col-xl-3 col-lg-4 col-md-6">
+                            <div class="restaurant-option p-md-3 p-1 py-2 bg-secondary rounded">
+                                <label for="restaurant{{restaurant.id}}">
+                                    <img src="{{restaurant.image.url}}" alt="{{restaurant.name}}" class="restaurant-image">
+                                    <input type="radio" name="restaurant" id="restaurant{{restaurant.id}}" class="form-check-input" value="{{restaurant.city}}-{{restaurant.id}}" required>
+                                    <span class="restaurant-name text-light">{{restaurant.name}}</span><br>
+                                    <span class="restaurant-city text-light">{{restaurant.city}}</span>
+                                </label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                
+                    <input id="next1" type="button" name="next" class="next action-button btn btn-primary" value="Next" />
+                </fieldset>
+                
+                
+                <fieldset>
+                    <h2 class="fs-title">Choose Date and Time</h2>
+                    <h3 class="fs-subtitle">Please select a date and time:</h3>
+                    
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="chosen_date">Date:</label>
+                            <input type="date" name="chosen_date" class="form-control" required>
+                        </div>
+                        <div class="col-4">
+                            <label for="start_time">Start Time:</label>
+                            <input type="time" name="start_time" class="form-control" required>
+                        </div>
+                        <div class="col-4">
+                            <label for="end_time">End Time:</label>
+                            <input type="time"  name="end_time" class="form-control" required>        
+                        </div>
+                    </div>
+                    <input type="button" name="previous" class="previous action-button-previous btn btn-secondary" value="Previous"/>
+                    <input id="next2" type="button" name="next" class="next action-button btn btn-primary" value="Next"/>
+                </fieldset>
+
+                <fieldset>
+                    <h2 class="fs-title">Choose a Table</h2>
+                    <h3 class="fs-subtitle">Please select a table:</h3>
+                    <div id="tablelist" class="row">
+                    </div>
+                    <input type="button" name="previous" class="previous action-button-previous btn btn-secondary" value="Previous"/>
+                    <input id="next3" type="button" name="next" class="next action-button btn btn-primary" value="Next"/>
+                </fieldset>
+                <fieldset>
+                    <div class="position-relative w-full">
+                        <h2>Orders</h2>
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-lg position-absolute end-0 top-0 bg-warning "
+                            style="font-size: 12px;"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalId"
+                        >
+                            Add items
+                        </button>
+                    </div>
+                    
+                      <div
+                        class="modal fade"
+                        id="modalId"
+                        tabindex="-1"
+                        data-bs-backdrop="static"
+                        data-bs-keyboard="false"
+                        role="dialog"
+                        aria-labelledby="modalTitleId"
+                        aria-hidden="true"
+                    >
+                        <div
+                            class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl"
+                            role="document"
+                        >
+                            <div class="modal-content" style="height: 100%;">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalTitleId">Order</h5>
+                                    <button
+                                        type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close"
+                                    ></button>
+                                </div>
+                                <div class="modal-body">
+                                    <ul class="nav nav-tabs">
+                                        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#allItems">All Items</a></li>
+                                        {% for category in categories %}
+                                            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#menu{{category.id}}">{{category.title}}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                    
+                                    <div class="tab-content  py-4">
+                                        <div id="allItems" class="tab-pane fade show active">
+                                            <div class="row">
+                                                {% for menu_item in menu_items %}
+                                                    <div class="col-md-4 col-sm-6 mb-4">
+                                                        <div class="card">
+                                                            <img src="{{ menu_item.image.url }}" class="card-img-top" alt="{{ menu_item.name }}">
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">{{ menu_item.name }}</h5>
+                                                                <p class="card-text">{{ menu_item.price }}</p>
+                                                                <button type="button" class="btn btn-primary w-full add-to-order" data-menu-id="{{ menu_item.id }}">Add</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                    
+                                        {% for category in categories %}
+                                            <div id="menu{{ category.id }}" class="tab-pane fade">
+                                                <div class="row">
+                                                    {% for menu_item in category.menu_items.all %}
+                                                        <div class="col-md-4 col-sm-6 mb-4">
+                                                            <div class="card">
+                                                                <img src="{{ menu_item.image.url }}" class="card-img-top" alt="{{ menu_item.name }}">
+                                                                <div class="card-body">
+                                                                    <h5 class="card-title">{{ menu_item.name }}</h5>
+                                                                    <p class="card-text">{{ menu_item.price }}</p>
+                                                                    <button type="button" class="btn btn-primary w-full add-to-order" data-menu-id="{{ menu_item.id }}">Add</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button
+                                        type="button"
+                                        class="btn btn-secondary"
+                                        data-bs-dismiss="modal"
+                                    >
+                                        Okay
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div id="selected-orders-list" class="list-group">
+                        </div>
+                    </div>
+                    <input type="button" name="previous" class="previous action-button-previous btn btn-secondary" value="Previous"/>
+                    <input id="complete" type="submit" name="submit" class="submit action-button btn btn-success" value="Complete"/>
+
+                </fieldset>
+            </form>
+    </div>
+    
+</div>
+<div class="toast bg-dark text-light" id="myToast" role="alert" aria-live="assertive" aria-atomic="true" style="position: absolute; top: 0; right: 0;">
+    <div class="toast-header">
+      <strong class="me-auto">Weather</strong>
+      <small>Now</small>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+        No outdoor service on rainy days!    </div>
+  </div>
+  <div class="toast bg-danger text-light" id="myToast2" role="alert" aria-live="assertive" aria-atomic="true" style="position: absolute; top: 0; right: 0;">
+    <div class="toast-header">
+      <strong class="me-auto">Error</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+        Please fill all inputs!!!!
+    </div>
+  </div>
+  
+{% endblock main %}
